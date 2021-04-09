@@ -1,16 +1,18 @@
 from rest_framework import serializers
 from .models import Task, Sprint, Tag
 from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'password')
-        extra_kwards = {'password':{'wrrite_only': True, 'required': True}}
+        extra_kwargs = {'password': {'write_only': True, 'required': True}}
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
+        Token.objects.create(user=user)
         return user
 
 
@@ -38,8 +40,7 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
 
-        fields = ('id', 'targetsprint', 'task', 'description', 'criteria', 'responsible', 'estimate', 'targettag',
-                  'status', 'sprint_pk_id', 'tag_pk_id', 'responsible_pk_id', 'created_at', 'updated_at')
+        fields = ('id', 'targetsprint', 'task', 'description', 'criteria', 'responsible', 'estimate', 'targettag', 'status', 'sprint_pk_id', 'tag_pk_id', 'responsible_pk_id', 'created_at', 'updated_at')
         read_only_fields = ('created_at', 'updated_at')
 
     def create(self, validated_data):
